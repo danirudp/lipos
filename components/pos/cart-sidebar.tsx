@@ -63,15 +63,66 @@ function useCheckout() {
     async (items: any[], totalAmount: number, customerId: string | null) => {
       if (items.length === 0) return;
       setIsProcessing(true);
+
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        toast.success(`Order processed successfully!`, {
-          icon: <Sparkles className="text-amber-500" size={16} />,
+        // Format items for API
+        const formattedItems = items.map((item) => ({
+          id: String(item.id),
+          quantity: Number(item.quantity),
+          price: Number(parseFloat(item.price).toFixed(2)),
+        }));
+
+        const payload = {
+          items: formattedItems,
+          totalAmount: Number(parseFloat(totalAmount).toFixed(2)),
+          customerId: customerId || null,
+        };
+
+        const response = await fetch(CONFIG.API_ENDPOINTS.CHECKOUT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
         });
+
+        const responseData = await response.json();
+
+        if (!response.ok) {
+          // Use the detailed error message from backend
+          const errorMsg =
+            responseData.details ||
+            responseData.error ||
+            `Checkout failed (${response.status})`;
+          throw new Error(errorMsg);
+        }
+
+        toast.success(`Order #${responseData.orderId} placed successfully!`, {
+          icon: <Sparkles className="text-amber-500" size={16} />,
+          description: responseData.message || 'Your order has been processed.',
+        });
+
         clearCart();
         return true;
-      } catch (error) {
-        toast.error('Transaction failed.');
+      } catch (error: any) {
+        console.error('Checkout error:', error);
+
+        let errorMessage =
+          error.message || 'Transaction failed. Please try again.';
+
+        // Handle specific backend errors
+        if (error.message.includes('Product not found')) {
+          errorMessage =
+            'One or more products are no longer available. Please refresh your cart.';
+        } else if (error.message.includes('Insufficient stock')) {
+          errorMessage =
+            'Some items have insufficient stock. Please update quantities.';
+        } else if (error.message.includes('Invalid item data')) {
+          errorMessage =
+            'Some cart items are invalid. Please refresh your cart.';
+        }
+
+        toast.error(errorMessage);
         return false;
       } finally {
         setIsProcessing(false);
