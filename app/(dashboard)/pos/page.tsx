@@ -3,6 +3,7 @@ import { POSLayout } from '@/components/pos/pos-layout';
 import { ProductCard } from '@/components/pos/product-card';
 import { SearchBar } from '@/components/pos/search-bar';
 import { PrismaClient } from '@prisma/client';
+// We REMOVED MobileNav import because it's already in the upper header
 
 const prisma = new PrismaClient();
 
@@ -35,25 +36,27 @@ export default async function POSPage(props: PageProps) {
 
   return (
     <POSLayout customers={customers}>
-      {/* HEADER: Compact & Glassmorphic */}
-      <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-slate-200 bg-white/90 px-4 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/90 md:px-6">
-        <div className="flex flex-1 items-center gap-4">
-          <div className="w-full max-w-xs lg:max-w-sm">
-            <SearchBar />
-          </div>
-          <div className="hidden h-6 w-px bg-slate-200 dark:bg-slate-800 sm:block" />
-          <div className="hidden flex-1 overflow-hidden sm:block">
-            <CategoryFilter />
-          </div>
+      {/* HEADER */}
+      {/* Fixed: Removed the MobileNav button. Search bar now uses the space. */}
+      <header className="sticky top-0 z-30 flex h-16 w-full max-w-[100vw] items-center gap-4 border-b border-slate-200 bg-white/80 px-4 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/80 md:px-6">
+        {/* Search Bar - Takes full width on mobile now */}
+        <div className="flex-1 min-w-0 max-w-xl">
+          <SearchBar />
+        </div>
+
+        {/* Desktop Divider & Filter (Hidden on mobile) */}
+        <div className="hidden h-6 w-px bg-slate-200 dark:bg-slate-800 md:block flex-shrink-0" />
+        <div className="hidden md:block flex-1 overflow-hidden min-w-0">
+          <CategoryFilter />
         </div>
       </header>
 
-      {/* MOBILE CATEGORY BAR (Visible only on small screens) */}
-      <div className="block border-b border-slate-100 bg-white px-4 py-2 sm:hidden dark:border-slate-800 dark:bg-slate-950">
+      {/* MOBILE CATEGORY BAR - Clean Horizontal Scroll */}
+      <div className="sticky top-16 z-20 w-full max-w-[100vw] overflow-hidden border-b border-slate-100 bg-white/95 px-4 py-3 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950 md:hidden">
         <CategoryFilter />
       </div>
 
-      {/* PRODUCT GRID: High Density */}
+      {/* PRODUCT GRID */}
       <div className="flex-1 overflow-y-auto bg-slate-50/50 p-4 dark:bg-slate-950 md:p-6">
         {products.length === 0 ? (
           <div className="flex h-64 flex-col items-center justify-center text-slate-400">
