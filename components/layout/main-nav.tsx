@@ -14,10 +14,12 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+// 1. IMPORT THE SIGN OUT ACTION
+import { signOutAction } from '@/lib/actions';
 
 // --- CONFIGURATION ---
-// Defined outside component to prevent re-creation on every render
 const NAV_ITEMS = [
+  // ... (Your existing NAV_ITEMS remains the same)
   {
     group: 'Operations',
     items: [
@@ -51,12 +53,11 @@ export function MainNav({ className, ...props }: MainNavProps) {
       )}
       {...props}
     >
-      {/* 1. BRAND HEADER */}
+      {/* 1. BRAND HEADER (Your existing code) */}
       <div className="h-20 flex items-center px-6 border-b border-transparent">
         <div className="group flex items-center gap-3.5 cursor-pointer">
           <div className="relative w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30 transition-transform group-hover:scale-105 group-active:scale-95">
             <span className="font-bold text-lg tracking-tighter">L</span>
-            {/* Subtle internal shine */}
             <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>
           <div className="flex flex-col">
@@ -70,20 +71,17 @@ export function MainNav({ className, ...props }: MainNavProps) {
         </div>
       </div>
 
-      {/* 2. SCROLLABLE NAVIGATION AREA */}
+      {/* 2. SCROLLABLE NAVIGATION AREA (Your existing code) */}
       <div className="flex-1 overflow-y-auto px-3 py-6 space-y-8 scrollbar-hide">
         <LayoutGroup id="sidebar">
-          {NAV_ITEMS.map((group, groupIndex) => (
+          {NAV_ITEMS.map((group) => (
             <div key={group.group}>
-              {/* Group Label */}
               <h3 className="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 select-none">
                 {group.group}
               </h3>
-
               <div className="space-y-1">
                 {group.items.map((item) => {
                   const isActive = pathname === item.href;
-
                   return (
                     <Link
                       key={item.href}
@@ -97,7 +95,6 @@ export function MainNav({ className, ...props }: MainNavProps) {
                           : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                       )}
                     >
-                      {/* Active State Background (Solid + Shadow) */}
                       {isActive && (
                         <motion.div
                           layoutId="activeTab"
@@ -109,8 +106,6 @@ export function MainNav({ className, ...props }: MainNavProps) {
                           }}
                         />
                       )}
-
-                      {/* Hover State Background (Subtle) */}
                       {hoveredPath === item.href && !isActive && (
                         <motion.div
                           layoutId="hoverTab"
@@ -121,7 +116,6 @@ export function MainNav({ className, ...props }: MainNavProps) {
                           transition={{ duration: 0.15 }}
                         />
                       )}
-
                       <div className="relative z-10 flex items-center gap-3 w-full">
                         <item.icon
                           size={18}
@@ -134,7 +128,6 @@ export function MainNav({ className, ...props }: MainNavProps) {
                         <span className="text-sm font-medium tracking-wide flex-1">
                           {item.label}
                         </span>
-
                         {isActive && (
                           <motion.div
                             initial={{ opacity: 0, x: -10 }}
@@ -152,10 +145,10 @@ export function MainNav({ className, ...props }: MainNavProps) {
         </LayoutGroup>
       </div>
 
-      {/* 3. USER FOOTER - Condensed & Functional */}
+      {/* 3. USER FOOTER - Updated with Sign Out Form */}
       <div className="p-3 mt-auto">
         <div className="relative overflow-hidden rounded-2xl bg-white border border-slate-200/60 p-1 shadow-sm transition-all hover:shadow-md hover:border-slate-300 dark:bg-slate-900 dark:border-slate-800">
-          {/* User Row */}
+          {/* User Row (Your existing code) */}
           <div className="flex items-center gap-3 p-2">
             <div className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 dark:bg-slate-800 dark:border-slate-700">
               <img
@@ -164,7 +157,6 @@ export function MainNav({ className, ...props }: MainNavProps) {
                 className="h-7 w-7"
               />
             </div>
-
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-slate-900 truncate dark:text-white">
                 James Anderson
@@ -173,21 +165,27 @@ export function MainNav({ className, ...props }: MainNavProps) {
                 Store Manager • ID:882
               </p>
             </div>
-
             <button className="text-slate-400 hover:text-slate-600 p-1.5 hover:bg-slate-50 rounded-lg transition-colors dark:hover:bg-slate-800 dark:hover:text-slate-300">
               <Settings size={16} />
             </button>
           </div>
 
-          {/* Quick Actions (Expandable concept) */}
+          {/* Quick Actions - Sign Out implemented using a Server Action */}
           <div className="grid grid-cols-2 gap-1 mt-1 border-t border-slate-100 pt-1 dark:border-slate-800">
             <button className="flex items-center justify-center gap-2 rounded-lg py-2 text-[10px] font-bold text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors dark:hover:bg-slate-800 dark:hover:text-white">
               View Profile
             </button>
-            <button className="flex items-center justify-center gap-2 rounded-lg py-2 text-[10px] font-bold text-red-500 hover:bg-red-50 transition-colors dark:hover:bg-red-900/20">
-              <LogOut size={12} />
-              Sign Out
-            </button>
+
+            {/* 2. SIGN OUT FORM */}
+            <form action={signOutAction}>
+              <button
+                type="submit"
+                className="flex w-full items-center justify-center gap-2 rounded-lg py-2 text-[10px] font-bold text-red-500 hover:bg-red-50 transition-colors dark:hover:bg-red-900/20"
+              >
+                <LogOut size={12} />
+                Sign Out
+              </button>
+            </form>
           </div>
         </div>
       </div>
