@@ -1,14 +1,27 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { SheetClose } from '@/components/ui/sheet'; // For closing mobile drawer
-import { formatCurrency } from '@/lib/utils';
+import { SheetClose } from '@/components/ui/sheet';
+import { cn, formatCurrency } from '@/lib/utils';
 import { useCartStore } from '@/store/cart-store';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Plus, ShoppingBag, Trash2, User, X } from 'lucide-react'; // <--- NEW Icons
-import Image from 'next/image'; // <--- NEW: For Thumbnails
+import { Check, Plus, ShoppingBag, Trash2, User, X } from 'lucide-react';
+import Image from 'next/image';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -28,24 +41,14 @@ export function CartSidebar({ customers, isMobile = false }: CartSidebarProps) {
     setCustomer,
   } = useCartStore();
   const [isLoading, setIsLoading] = useState(false);
+  const [openCombobox, setOpenCombobox] = useState(false); // State for the new dropdown
 
   const total = getTotal();
   const tax = total * 0.1;
   const finalTotal = total + tax;
 
-  // Helper to decrease quantity (Senior Logic)
-  const decreaseQuantity = (item: any) => {
-    if (item.quantity > 1) {
-      // We assume a 'removeOne' action exists or we hack it by removing and re-adding X-1?
-      // Actually, standard Zustand logic usually requires a specific 'decrease' action.
-      // For this interview, we'll keep it simple: Removing entirely if standard,
-      // OR we can just visually allow 'Trash' for removal and 'Plus' for adding.
-      // Let's stick to "Trash to remove" to avoid complex store changes right now.
-      removeFromCart(item.id);
-      // In a real app, you'd add a 'decreaseQuantity' action to the store.
-      // For now, let's just use the trash button for removal to be safe.
-    }
-  };
+  // Find active customer name for display
+  const selectedCustomer = customers.find((c) => c.id === customerId);
 
   const handleCheckout = async () => {
     setIsLoading(true);
@@ -119,30 +122,89 @@ export function CartSidebar({ customers, isMobile = false }: CartSidebarProps) {
           </div>
         </div>
 
-        {/* CUSTOMER SELECTOR - Premium Pill Design */}
-        <div className="relative group">
-          <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
-            <User size={16} />
-          </div>
-          <select
-            className="w-full appearance-none rounded-xl border-0 bg-slate-100 py-3 pl-10 pr-4 text-sm font-semibold text-slate-700 outline-none ring-1 ring-transparent transition-all hover:bg-slate-200 focus:bg-white focus:ring-blue-500 dark:bg-slate-800 dark:text-slate-200 dark:focus:bg-slate-900"
-            value={customerId || ''}
-            onChange={(e) => setCustomer(e.target.value || null)}
-          >
-            <option value="">Walk-in Customer</option>
-            {customers.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
-            CHANGE
-          </div>
-        </div>
+        {/* CUSTOMER SELECTOR - Premium Combobox (Replaces <select>) */}
+        <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
+          <PopoverTrigger asChild>
+            <button
+              role="combobox"
+              aria-expanded={openCombobox}
+              className="relative w-full flex items-center rounded-full bg-slate-100 py-3 pl-11 pr-16 text-sm font-bold text-slate-700 outline-none transition-all hover:bg-slate-200 focus:bg-white focus:ring-2 focus:ring-blue-600/20 dark:bg-slate-800 dark:text-slate-200 dark:focus:bg-slate-900 group"
+            >
+              <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-hover:text-blue-600 transition-colors">
+                <User size={16} />
+              </div>
+
+              <span className="truncate">
+                {selectedCustomer ? selectedCustomer.name : 'Guest Customer'}
+              </span>
+
+              {/* "Change" Pill */}
+              <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white px-3 py-1 text-[10px] font-bold text-slate-500 shadow-sm uppercase tracking-wide group-hover:text-blue-600 transition-colors dark:bg-slate-700 dark:text-slate-300">
+                Change
+              </div>
+            </button>
+          </PopoverTrigger>
+
+          <PopoverContent className="w-[350px] p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Search customer..." className="h-11" />
+              <CommandList>
+                <CommandEmpty>No customer found.</CommandEmpty>
+                <CommandGroup>
+                  <CommandItem
+                    onSelect={() => {
+                      setCustomer(null);
+                      setOpenCombobox(false);
+                    }}
+                    className="flex items-center gap-2 cursor-pointer py-3 aria-selected:bg-blue-50 aria-selected:text-blue-700"
+                  >
+                    <Check
+                      className={cn(
+                        'mr-2 h-4 w-4',
+                        !customerId ? 'opacity-100' : 'opacity-0'
+                      )}
+                    />
+                    <div className="flex flex-col">
+                      <span className="font-bold">Guest Customer</span>
+                      <span className="text-[10px] text-slate-500">
+                        Walk-in client
+                      </span>
+                    </div>
+                  </CommandItem>
+
+                  {customers.map((customer) => (
+                    <CommandItem
+                      key={customer.id}
+                      onSelect={() => {
+                        setCustomer(customer.id);
+                        setOpenCombobox(false);
+                      }}
+                      className="flex items-center gap-2 cursor-pointer py-3 aria-selected:bg-blue-50 aria-selected:text-blue-700"
+                    >
+                      <Check
+                        className={cn(
+                          'mr-2 h-4 w-4',
+                          customerId === customer.id
+                            ? 'opacity-100'
+                            : 'opacity-0'
+                        )}
+                      />
+                      <div className="flex flex-col">
+                        <span className="font-bold">{customer.name}</span>
+                        <span className="text-[10px] text-slate-500">
+                          {customer.phone || 'No phone'}
+                        </span>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </div>
 
-      {/* ITEMS LIST */}
+      {/* ITEMS LIST (Unchanged) */}
       <ScrollArea className="flex-1 p-2 md:p-3">
         {items.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center space-y-4 text-center text-slate-400 opacity-60">
@@ -168,7 +230,6 @@ export function CartSidebar({ customers, isMobile = false }: CartSidebarProps) {
                   exit={{ opacity: 0, x: -100 }}
                   className="group relative flex gap-3 overflow-hidden rounded-xl border border-white bg-white p-2 shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-950"
                 >
-                  {/* Thumbnail Image */}
                   <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-slate-100">
                     {item.image ? (
                       <Image
@@ -183,8 +244,6 @@ export function CartSidebar({ customers, isMobile = false }: CartSidebarProps) {
                       </div>
                     )}
                   </div>
-
-                  {/* Info & Controls */}
                   <div className="flex flex-1 flex-col justify-between py-0.5">
                     <div className="flex justify-between gap-2">
                       <h4 className="line-clamp-2 text-sm font-semibold text-slate-700 dark:text-slate-200 leading-tight">
@@ -194,16 +253,13 @@ export function CartSidebar({ customers, isMobile = false }: CartSidebarProps) {
                         {formatCurrency(item.price * item.quantity)}
                       </span>
                     </div>
-
                     <div className="flex items-center justify-between">
                       <div className="text-[10px] text-slate-400 font-medium">
                         {formatCurrency(item.price)} each
                       </div>
-
-                      {/* Quantity Controls */}
                       <div className="flex items-center gap-3 rounded-lg bg-slate-50 p-1 dark:bg-slate-900">
                         <button
-                          onClick={() => removeFromCart(item.id)} // Currently removes item. Can be upgraded to decrease
+                          onClick={() => removeFromCart(item.id)}
                           className="flex h-6 w-6 items-center justify-center rounded-md bg-white text-slate-500 shadow-sm transition-colors hover:text-red-500 dark:bg-slate-800"
                         >
                           <Trash2 size={12} />
@@ -227,9 +283,8 @@ export function CartSidebar({ customers, isMobile = false }: CartSidebarProps) {
         )}
       </ScrollArea>
 
-      {/* FOOTER - Payment Summary */}
+      {/* FOOTER (Unchanged) */}
       <div className="relative z-20 border-t border-slate-200 bg-white p-4 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] dark:border-slate-800 dark:bg-slate-950">
-        {/* Totals Block */}
         <div className="mb-4 space-y-2 rounded-xl border border-slate-100 bg-slate-50/50 p-3 dark:border-slate-800 dark:bg-slate-900/50">
           <div className="flex justify-between text-xs font-medium text-slate-500">
             <span>Subtotal</span>
@@ -249,8 +304,6 @@ export function CartSidebar({ customers, isMobile = false }: CartSidebarProps) {
             </span>
           </div>
         </div>
-
-        {/* Charge Button */}
         <button
           onClick={handleCheckout}
           disabled={items.length === 0 || isLoading}
