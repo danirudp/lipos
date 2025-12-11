@@ -1,5 +1,10 @@
 'use client';
 
+import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+// Components
 import { CartSidebar } from '@/components/pos/cart-sidebar';
 import { Button } from '@/components/ui/button';
 import {
@@ -7,10 +12,9 @@ import {
   SheetContent,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet'; // <--- Import SheetTitle
-import { formatCurrency } from '@/lib/utils';
+} from '@/components/ui/sheet';
+import { cn, formatCurrency } from '@/lib/utils';
 import { useCartStore } from '@/store/cart-store';
-import { ShoppingBag } from 'lucide-react';
 
 interface POSLayoutProps {
   children: React.ReactNode;
@@ -18,47 +22,130 @@ interface POSLayoutProps {
 }
 
 export function POSLayout({ children, customers }: POSLayoutProps) {
+  // Hydration Check
+  const [isMounted, setIsMounted] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
   const { items, getTotal } = useCartStore();
-  const total = getTotal();
-  const itemCount = items.reduce((acc, item) => acc + item.quantity, 0);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Safe access to store values
+  const total = isMounted ? getTotal() : 0;
+  const itemCount = isMounted
+    ? items.reduce((acc, item) => acc + item.quantity, 0)
+    : 0;
 
   return (
-    <div className="flex h-[calc(100vh-64px)] md:h-screen overflow-hidden">
-      {/* MAIN CONTENT (Product Grid) */}
-      <div className="flex-1 flex flex-col h-full relative">
-        {children}
+    // Use 100dvh (dynamic viewport height) for better mobile browser support
+    <div className="flex h-[100dvh] w-full overflow-hidden bg-slate-50 dark:bg-slate-950">
+      {/* 1. MAIN CONTENT AREA (Product Grid) */}
+      <main className="flex-1 flex flex-col h-full relative min-w-0 transition-all duration-300 ease-in-out">
+        {/* Scrollable Container for Children */}
+        <div className="h-full overflow-y-auto overflow-x-hidden scrollbar-hide">
+          <div className="p-4 pb-24 md:pb-4">{children}</div>
+        </div>
 
-        {/* MOBILE FLOATING CART BUTTON */}
+        {/* 2. MOBILE FLOATING ACTION BUTTON (FAB) */}
         <Sheet>
           <SheetTrigger asChild>
-            <Button className="md:hidden fixed bottom-6 right-6 h-14 rounded-full shadow-xl bg-blue-600 hover:bg-blue-700 z-50 px-6 gap-3 animate-in fade-in slide-in-from-bottom-4">
-              <div className="relative">
-                <ShoppingBag size={24} />
-                {itemCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-blue-600">
-                    {itemCount}
-                  </span>
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="md:hidden fixed bottom-6 left-6 right-6 z-50"
+            >
+              <Button
+                className={cn(
+                  'h-16 w-full rounded-2xl shadow-2xl shadow-blue-900/20 backdrop-blur-lg border border-white/20 flex items-center justify-between px-6 transition-transform active:scale-95',
+                  itemCount > 0
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                    : 'bg-slate-900 text-white'
                 )}
-              </div>
-              <span className="font-bold text-lg">{formatCurrency(total)}</span>
-            </Button>
+              >
+                <div className="flex items-center gap-3">
+                  <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
+                    <ShoppingBag size={20} />
+                    {itemCount > 0 && (
+                      <motion.span
+                        key={itemCount}
+                        initial={{ scale: 0.5 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-slate-900 ring-2 ring-blue-600"
+                      >
+                        {itemCount}
+                      </motion.span>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-start">
+                    <span className="text-xs font-medium text-blue-100">
+                      Total
+                    </span>
+                    <span className="text-lg font-bold tabular-nums leading-none">
+                      {formatCurrency(total)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 text-sm font-bold opacity-90">
+                  <span>View Cart</span>
+                  <ChevronRight size={16} />
+                </div>
+              </Button>
+            </motion.div>
           </SheetTrigger>
 
           <SheetContent
             side="bottom"
-            className="h-[90vh] p-0 rounded-t-[20px] flex flex-col"
+            className="h-[92dvh] rounded-t-[2rem] p-0 border-t-0 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.3)]"
           >
-            {/* ACCESSIBILITY FIX: Hidden Title */}
             <SheetTitle className="sr-only">Shopping Cart</SheetTitle>
-
-            <CartSidebar customers={customers} isMobile />
+            {/* Grab Handle Visual Cue */}
+            <div className="flex w-full justify-center pt-3 pb-1">
+              <div className="h-1.5 w-12 rounded-full bg-slate-300 dark:bg-slate-700" />
+            </div>
+            <div className="h-full pb-8">
+              <CartSidebar customers={customers} isMobile />
+            </div>
           </SheetContent>
         </Sheet>
-      </div>
+      </main>
 
-      {/* DESKTOP SIDEBAR CART */}
-      <div className="hidden md:block w-[400px] border-l bg-white dark:bg-slate-950 h-full shadow-xl z-20">
-        <CartSidebar customers={customers} />
+      {/* 3. DESKTOP COLLAPSIBLE SIDEBAR */}
+      <motion.aside
+        initial={false}
+        animate={{
+          width: isSidebarCollapsed ? 0 : 420,
+          opacity: isSidebarCollapsed ? 0 : 1,
+        }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        className="hidden md:flex h-full relative flex-col border-l border-slate-200 bg-white shadow-2xl z-20 overflow-hidden dark:border-slate-800 dark:bg-slate-950"
+      >
+        <div className="h-full w-[420px]">
+          {' '}
+          {/* Fixed width inner container prevents content squishing during animation */}
+          <CartSidebar customers={customers} />
+        </div>
+      </motion.aside>
+
+      {/* 4. DESKTOP TOGGLE BUTTON */}
+      {/* Placed outside the sidebar so it remains visible when collapsed */}
+      <div
+        className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 z-30 transition-all duration-300"
+        style={{ right: isSidebarCollapsed ? 0 : '420px' }}
+      >
+        <button
+          onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          className="flex h-12 w-6 items-center justify-center rounded-l-xl border-y border-l border-slate-200 bg-white text-slate-400 shadow-md hover:w-8 hover:text-blue-600 dark:border-slate-800 dark:bg-slate-900"
+          title={isSidebarCollapsed ? 'Open Cart' : 'Collapse Cart'}
+        >
+          {isSidebarCollapsed ? (
+            <ChevronLeft size={16} />
+          ) : (
+            <ChevronRight size={16} />
+          )}
+        </button>
       </div>
     </div>
   );
