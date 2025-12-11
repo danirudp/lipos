@@ -16,6 +16,8 @@ import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
+import { useRouter } from 'next/navigation';
+
 // UI Lib Imports
 import { Button } from '@/components/ui/button';
 import {
@@ -58,6 +60,7 @@ interface CartSidebarProps {
 function useCheckout() {
   const [isProcessing, setIsProcessing] = useState(false);
   const { clearCart } = useCartStore();
+  const router = useRouter();
 
   const processCheckout = useCallback(
     async (items: any[], totalAmount: number, customerId: string | null) => {
@@ -103,6 +106,7 @@ function useCheckout() {
         });
 
         clearCart();
+        router.refresh();
         return true;
       } catch (error: any) {
         console.error('Checkout error:', error);
@@ -128,7 +132,7 @@ function useCheckout() {
         setIsProcessing(false);
       }
     },
-    [clearCart]
+    [clearCart, router]
   );
 
   return { isProcessing, processCheckout };
