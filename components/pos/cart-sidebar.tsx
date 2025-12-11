@@ -5,12 +5,24 @@ import { Separator } from '@/components/ui/separator';
 import { formatCurrency } from '@/lib/utils';
 import { useCartStore } from '@/store/cart-store';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ShoppingBag, Trash2 } from 'lucide-react';
+import { ShoppingBag, Trash2, User } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
-export function CartSidebar() {
-  const { items, removeFromCart, clearCart, getTotal } = useCartStore(); // Ensure clearCart is destructured
+// Define the prop type
+interface CartSidebarProps {
+  customers: any[]; // We accept the list from the parent
+}
+
+export function CartSidebar({ customers }: CartSidebarProps) {
+  const {
+    items,
+    removeFromCart,
+    clearCart,
+    getTotal,
+    customerId,
+    setCustomer,
+  } = useCartStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const total = getTotal();
@@ -26,7 +38,8 @@ export function CartSidebar() {
         body: JSON.stringify({
           items,
           totalAmount: finalTotal,
-          paymentMethod: 'CASH', // Hardcoded for MVP, can be dynamic later
+          paymentMethod: 'CASH',
+          customerId: customerId, // Send the ID!
         }),
       });
 
@@ -35,14 +48,13 @@ export function CartSidebar() {
       if (response.ok) {
         toast.success(`Order ${data.orderId} completed!`, {
           description: 'Receipt has been printed.',
-          duration: 4000,
         });
-        clearCart(); // Wipe the cart clean
+        clearCart();
       } else {
-        toast.error('Checkout failed. Please try again.');
+        toast.error('Checkout failed.');
       }
     } catch (error) {
-      toast.error('Network error. Check connection.');
+      toast.error('Network error.');
     } finally {
       setIsLoading(false);
     }
@@ -51,12 +63,33 @@ export function CartSidebar() {
   return (
     <div className="w-[400px] bg-white dark:bg-slate-950 border-l shadow-2xl z-20 flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b bg-white dark:bg-slate-950">
-        <h2 className="text-lg font-semibold flex items-center gap-2">
-          <ShoppingBag className="w-5 h-5 text-blue-600" />
-          Current Order
-        </h2>
-        <p className="text-sm text-slate-500">{items.length} items in cart</p>
+      <div className="p-4 border-b bg-white dark:bg-slate-950 space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <ShoppingBag className="w-5 h-5 text-blue-600" />
+            Current Order
+          </h2>
+          <span className="text-xs bg-slate-100 px-2 py-1 rounded-full text-slate-600 font-bold">
+            {items.length} Items
+          </span>
+        </div>
+
+        {/* CUSTOMER SELECTOR */}
+        <div className="relative">
+          <User className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+          <select
+            className="w-full h-10 pl-9 pr-4 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+            value={customerId || ''}
+            onChange={(e) => setCustomer(e.target.value || null)}
+          >
+            <option value="">Guest Customer</option>
+            {customers.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Cart Items List */}
@@ -65,7 +98,6 @@ export function CartSidebar() {
           <div className="flex flex-col items-center justify-center h-40 text-slate-400 mt-10">
             <ShoppingBag className="w-12 h-12 mb-2 opacity-20" />
             <p>Cart is empty</p>
-            <p className="text-xs mt-1">Scan or click products to add</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -108,7 +140,7 @@ export function CartSidebar() {
         )}
       </ScrollArea>
 
-      {/* Footer / Totals */}
+      {/* Footer */}
       <div className="p-4 bg-white dark:bg-slate-950 border-t space-y-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
         <div className="space-y-2">
           <div className="flex justify-between text-sm">

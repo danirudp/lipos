@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge'; // We need to install this!
+import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -6,24 +6,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'; // And this!
+} from '@/components/ui/table';
 import { formatCurrency } from '@/lib/utils';
 import { PrismaClient } from '@prisma/client';
+import { User } from 'lucide-react';
 
 const prisma = new PrismaClient();
 
 async function getOrders() {
-  // Fetch orders AND their items (Nested Read)
   const orders = await prisma.order.findMany({
-    orderBy: { createdAt: 'desc' }, // Newest first
+    orderBy: { createdAt: 'desc' },
     include: {
+      customer: true,
       items: {
-        include: { product: true }, // Get product details too
+        include: { product: true },
       },
     },
   });
 
-  // Serialize Decimals for Client
   return orders.map((order) => ({
     ...order,
     totalAmount: Number(order.totalAmount),
@@ -47,7 +47,9 @@ export default async function HistoryPage() {
         <h1 className="text-2xl font-bold tracking-tight">
           Transaction History
         </h1>
-        <p className="text-slate-500">View all completed sales.</p>
+        <p className="text-slate-500">
+          View all completed sales and customer details.
+        </p>
       </div>
 
       <div className="border rounded-lg bg-white dark:bg-slate-950 overflow-hidden">
@@ -55,6 +57,7 @@ export default async function HistoryPage() {
           <TableHeader>
             <TableRow className="bg-slate-50 dark:bg-slate-900/50">
               <TableHead>Order ID</TableHead>
+              <TableHead>Customer</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Items</TableHead>
               <TableHead>Total</TableHead>
@@ -68,6 +71,29 @@ export default async function HistoryPage() {
                   {order.id.slice(-8)}...
                 </TableCell>
                 <TableCell>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+                      <User size={14} />
+                    </div>
+                    <div>
+                      {order.customer ? (
+                        <span className="font-medium text-slate-900 block">
+                          {order.customer.name}
+                        </span>
+                      ) : (
+                        <span className="text-slate-400 italic block">
+                          Walk-in Customer
+                        </span>
+                      )}
+                      {order.customer?.email && (
+                        <span className="text-[10px] text-slate-400 block">
+                          {order.customer.email}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
                   {new Date(order.createdAt).toLocaleDateString()}
                   <span className="text-xs text-slate-400 block">
                     {new Date(order.createdAt).toLocaleTimeString()}
@@ -76,8 +102,9 @@ export default async function HistoryPage() {
                 <TableCell>
                   <div className="flex flex-col gap-1">
                     {order.items.map((item, i) => (
-                      <span key={i} className="text-sm">
-                        {item.quantity}x {item.product.name}
+                      <span key={i} className="text-xs text-slate-600">
+                        <span className="font-bold">{item.quantity}x</span>{' '}
+                        {item.product.name}
                       </span>
                     ))}
                   </div>

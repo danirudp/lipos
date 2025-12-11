@@ -1,17 +1,17 @@
 import { create } from 'zustand';
 
-// Define the shape of a Cart Item
 export interface CartItem {
-  id: string; // Product ID
+  id: string;
   name: string;
   price: number;
   quantity: number;
   image?: string | null;
 }
 
-// Define the Store Actions
 interface CartStore {
   items: CartItem[];
+  customerId: string | null; // <--- NEW STATE
+  setCustomer: (id: string | null) => void; // <--- NEW ACTION
   addToCart: (product: any) => void;
   removeFromCart: (productId: string) => void;
   clearCart: () => void;
@@ -20,12 +20,13 @@ interface CartStore {
 
 export const useCartStore = create<CartStore>((set, get) => ({
   items: [],
+  customerId: null,
+
+  setCustomer: (id) => set({ customerId: id }), // <--- Simple setter
 
   addToCart: (product) => {
     set((state) => {
       const existingItem = state.items.find((item) => item.id === product.id);
-
-      // If item exists, just increase quantity
       if (existingItem) {
         return {
           items: state.items.map((item) =>
@@ -35,11 +36,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
           ),
         };
       }
-
-      // If new item, add it to array
-      return {
-        items: [...state.items, { ...product, quantity: 1 }],
-      };
+      return { items: [...state.items, { ...product, quantity: 1 }] };
     });
   },
 
@@ -49,7 +46,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
     }));
   },
 
-  clearCart: () => set({ items: [] }),
+  clearCart: () => set({ items: [], customerId: null }), // Reset customer too? optional
 
   getTotal: () => {
     const { items } = get();
