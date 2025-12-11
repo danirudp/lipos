@@ -29,7 +29,7 @@ export function SearchBar() {
         placeholder="Search products..."
         onChange={(e) => handleSearch(e.target.value)}
         defaultValue={searchParams.get('query')?.toString()}
-        className="h-11 w-full rounded-full bg-slate-100 pl-10 pr-4 text-sm font-medium text-slate-900 outline-none transition-all placeholder:text-slate-500 focus:bg-white focus:ring-2 focus:ring-blue-600/20 focus:ring-offset-2 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-800"
+        className="h-11 w-full rounded-xl bg-slate-100 pl-10 pr-4 text-sm font-medium text-slate-900 outline-none transition-all placeholder:text-slate-500 focus:bg-white focus:ring-2 focus:ring-blue-600/20 focus:ring-offset-2 dark:bg-slate-900 dark:text-white dark:focus:bg-slate-800"
       />
     </div>
   );

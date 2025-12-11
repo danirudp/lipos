@@ -83,7 +83,7 @@ export default async function HistoryPage() {
                 </div>
                 <Badge
                   variant="secondary"
-                  className="flex-shrink-0 bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400"
+                  className="flex-shrink-0 bg-green-100 rounded-md px-2 py-0.5 text-[10px] font-bold text-green-700 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400 "
                 >
                   {order.status}
                 </Badge>
@@ -138,7 +138,7 @@ export default async function HistoryPage() {
 
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-slate-800">
                         <User size={14} />
                       </div>
                       <div className="flex flex-col">
@@ -195,7 +195,7 @@ export default async function HistoryPage() {
                   <TableCell className="text-right">
                     <Badge
                       variant="secondary"
-                      className="bg-green-100 text-green-700 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400"
+                      className="bg-green-100 text-green-700 rounded-md hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400"
                     >
                       {order.status}
                     </Badge>

@@ -159,7 +159,7 @@ export default async function ProductsPage() {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className="font-medium text-slate-500 dark:text-slate-400"
+                        className="font-medium text-slate-500 dark:text-slate-400 rounded-md"
                       >
                         {product.category}
                       </Badge>

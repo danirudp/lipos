@@ -31,7 +31,7 @@ export function MainNav({ className, ...props }: MainNavProps) {
   return (
     <nav
       className={cn(
-        'flex flex-col h-full bg-slate-50/50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800',
+        'flex flex-col h-full bg-slate-50/50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 font-sans',
         className
       )}
       {...props}
@@ -39,14 +39,14 @@ export function MainNav({ className, ...props }: MainNavProps) {
       {/* 1. LOGO AREA - Clean & Bold */}
       <div className="h-20 flex items-center px-6">
         <div className="flex items-center gap-3 font-bold text-xl tracking-tight">
-          <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-600/20">
+          <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-600/25">
             <span className="text-sm">L</span>
           </div>
           <span className="text-slate-900 dark:text-white">LIPOS</span>
         </div>
       </div>
 
-      {/* 2. NAVIGATION LINKS - With Animated Pill */}
+      {/* 2. NAVIGATION LINKS - With Animated Pill & Shadows */}
       <div className="flex-1 px-4 space-y-2 py-6">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
@@ -55,17 +55,17 @@ export function MainNav({ className, ...props }: MainNavProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                'relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group overflow-hidden',
+                'relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group overflow-hidden outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-blue-500',
                 isActive
                   ? 'text-blue-600 font-semibold'
-                  : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100/50 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-900'
+                  : 'text-slate-500 font-medium hover:text-slate-900 hover:bg-slate-100/80 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-900'
               )}
             >
-              {/* Active Background Pill (Animated) */}
+              {/* Active Background Pill (Animated with Shadow) */}
               {isActive && (
                 <motion.div
                   layoutId="activeNav"
-                  className="absolute inset-0 bg-blue-50 dark:bg-blue-900/20"
+                  className="absolute inset-0 bg-blue-50 shadow-sm shadow-blue-500/10 dark:bg-blue-900/20"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -77,13 +77,15 @@ export function MainNav({ className, ...props }: MainNavProps) {
               <item.icon
                 size={20}
                 className={cn(
-                  'relative z-10 transition-colors',
+                  'relative z-10 transition-colors duration-300',
                   isActive
-                    ? 'text-blue-600'
+                    ? 'text-blue-600 drop-shadow-sm'
                     : 'text-slate-400 group-hover:text-slate-600'
                 )}
               />
-              <span className="relative z-10 text-sm">{item.label}</span>
+              <span className="relative z-10 text-sm tracking-wide">
+                {item.label}
+              </span>
 
               {/* Subtle Arrow on Active */}
               {isActive && (
@@ -92,7 +94,7 @@ export function MainNav({ className, ...props }: MainNavProps) {
                   animate={{ opacity: 1, x: 0 }}
                   className="relative z-10 ml-auto"
                 >
-                  <ChevronRight size={14} />
+                  <ChevronRight size={14} className="text-blue-400" />
                 </motion.div>
               )}
             </Link>
@@ -100,25 +102,25 @@ export function MainNav({ className, ...props }: MainNavProps) {
         })}
       </div>
 
-      {/* 3. USER PROFILE FOOTER - The "Enterprise" Touch */}
-      <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
-        <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-3 dark:bg-slate-900">
+      {/* 3. USER PROFILE FOOTER - Premium Card Style */}
+      <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950">
+        <div className="flex items-center gap-3 rounded-xl bg-white border border-slate-200 shadow-sm p-3 transition-all hover:shadow-md dark:bg-slate-900 dark:border-slate-800">
           {/* Avatar Placeholder */}
-          <div className="h-9 w-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs border border-blue-200">
+          <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-100 to-blue-50 flex items-center justify-center text-blue-700 font-bold text-xs border border-blue-100 shadow-inner">
             JD
           </div>
 
           <div className="flex-1 overflow-hidden">
-            <h4 className="text-sm font-semibold text-slate-900 truncate dark:text-white">
+            <h4 className="text-sm font-bold text-slate-800 truncate dark:text-white leading-tight">
               John Doe
             </h4>
-            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-medium truncate">
+            <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold truncate">
               Store Manager
             </p>
           </div>
 
-          <button className="text-slate-400 hover:text-red-500 transition-colors p-1">
-            <LogOut size={18} />
+          <button className="text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg p-1.5 transition-all">
+            <LogOut size={16} />
           </button>
         </div>
       </div>
