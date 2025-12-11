@@ -1,7 +1,7 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { formatCurrency } from '@/lib/utils';
 import { useCartStore } from '@/store/cart-store';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -11,10 +11,11 @@ import { toast } from 'sonner';
 
 // Define the prop type
 interface CartSidebarProps {
-  customers: any[]; // We accept the list from the parent
+  customers: any[];
+  isMobile?: boolean; // New prop
 }
 
-export function CartSidebar({ customers }: CartSidebarProps) {
+export function CartSidebar({ customers, isMobile = false }: CartSidebarProps) {
   const {
     items,
     removeFromCart,
@@ -61,24 +62,30 @@ export function CartSidebar({ customers }: CartSidebarProps) {
   };
 
   return (
-    <div className="w-[400px] bg-white dark:bg-slate-950 border-l shadow-2xl z-20 flex flex-col h-full">
+    <div className="flex h-full flex-col bg-white dark:bg-slate-950">
       {/* Header */}
-      <div className="p-4 border-b bg-white dark:bg-slate-950 space-y-4">
+      <div className="flex flex-col gap-3 border-b border-slate-100 bg-white p-4 dark:border-slate-800 dark:bg-slate-950">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <ShoppingBag className="w-5 h-5 text-blue-600" />
+          <h2 className="flex items-center gap-2 font-bold text-slate-800 dark:text-white">
+            <ShoppingBag className="h-5 w-5 text-blue-600" />
             Current Order
           </h2>
-          <span className="text-xs bg-slate-100 px-2 py-1 rounded-full text-slate-600 font-bold">
-            {items.length} Items
-          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => clearCart()}
+            className="h-6 px-2 text-xs text-red-500 hover:bg-red-50 hover:text-red-600"
+            disabled={items.length === 0}
+          >
+            Clear
+          </Button>
         </div>
 
-        {/* CUSTOMER SELECTOR */}
+        {/* Customer Selector - Styled */}
         <div className="relative">
           <User className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
           <select
-            className="w-full h-10 pl-9 pr-4 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+            className="w-full appearance-none rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-4 text-sm font-medium text-slate-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
             value={customerId || ''}
             onChange={(e) => setCustomer(e.target.value || null)}
           >
@@ -92,12 +99,13 @@ export function CartSidebar({ customers }: CartSidebarProps) {
         </div>
       </div>
 
-      {/* Cart Items List */}
-      <ScrollArea className="flex-1 bg-slate-50/50 dark:bg-slate-900/50 p-4">
+      {/* Cart Items */}
+      <ScrollArea className="flex-1 bg-slate-50/30 p-4 dark:bg-slate-900/30">
         {items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-40 text-slate-400 mt-10">
-            <ShoppingBag className="w-12 h-12 mb-2 opacity-20" />
-            <p>Cart is empty</p>
+          <div className="flex h-full flex-col items-center justify-center text-center text-slate-400">
+            <ShoppingBag className="mb-3 h-12 w-12 opacity-10" />
+            <p className="text-sm font-medium">Cart is empty</p>
+            <p className="text-xs">Select products to begin</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -105,32 +113,33 @@ export function CartSidebar({ customers }: CartSidebarProps) {
               {items.map((item) => (
                 <motion.div
                   key={item.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="flex items-center justify-between bg-white dark:bg-slate-900 p-3 rounded-lg border shadow-sm"
+                  layout
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  className="relative flex items-start justify-between rounded-lg border border-slate-100 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950"
                 >
-                  <div className="flex-1">
-                    <h4 className="font-medium text-sm line-clamp-1">
+                  <div className="flex flex-1 flex-col gap-1">
+                    <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200 line-clamp-1">
                       {item.name}
                     </h4>
-                    <div className="flex items-center gap-2 mt-1 text-xs text-slate-500">
-                      <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-700 font-bold">
-                        x{item.quantity}
+                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <span className="font-medium text-blue-600">
+                        {item.quantity}x
                       </span>
                       <span>@ {formatCurrency(item.price)}</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4">
-                    <span className="font-bold text-sm">
+                  <div className="flex flex-col items-end gap-2">
+                    <span className="text-sm font-bold text-slate-900 dark:text-white">
                       {formatCurrency(item.price * item.quantity)}
                     </span>
                     <button
                       onClick={() => removeFromCart(item.id)}
-                      className="text-slate-400 hover:text-red-500 transition-colors"
+                      className="text-slate-300 hover:text-red-500 transition-colors"
                     >
-                      <Trash2 size={18} />
+                      <Trash2 size={14} />
                     </button>
                   </div>
                 </motion.div>
@@ -140,19 +149,19 @@ export function CartSidebar({ customers }: CartSidebarProps) {
         )}
       </ScrollArea>
 
-      {/* Footer */}
-      <div className="p-4 bg-white dark:bg-slate-950 border-t space-y-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-slate-500">Subtotal</span>
+      {/* Footer / Calculation */}
+      <div className="border-t border-slate-100 bg-white p-4 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.05)] dark:border-slate-800 dark:bg-slate-950">
+        <div className="space-y-2 mb-4">
+          <div className="flex justify-between text-xs text-slate-500">
+            <span>Subtotal</span>
             <span>{formatCurrency(total)}</span>
           </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-slate-500">Tax (10%)</span>
+          <div className="flex justify-between text-xs text-slate-500">
+            <span>Tax (10%)</span>
             <span>{formatCurrency(tax)}</span>
           </div>
-          <Separator />
-          <div className="flex justify-between text-xl font-bold text-slate-800 dark:text-white">
+          <div className="my-2 border-t border-dashed border-slate-200 dark:border-slate-800" />
+          <div className="flex justify-between text-lg font-bold text-slate-900 dark:text-white">
             <span>Total</span>
             <span className="text-blue-600">{formatCurrency(finalTotal)}</span>
           </div>
@@ -161,9 +170,16 @@ export function CartSidebar({ customers }: CartSidebarProps) {
         <button
           onClick={handleCheckout}
           disabled={items.length === 0 || isLoading}
-          className="w-full h-12 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold rounded-lg transition-all shadow-lg shadow-blue-600/20 active:scale-95 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full flex h-12 items-center justify-center rounded-xl bg-blue-600 font-bold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 hover:shadow-blue-600/30 active:scale-95 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
         >
-          {isLoading ? 'Processing...' : `Charge ${formatCurrency(finalTotal)}`}
+          {isLoading ? (
+            <div className="flex items-center gap-2">
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              Processing...
+            </div>
+          ) : (
+            `Charge ${formatCurrency(finalTotal)}`
+          )}
         </button>
       </div>
     </div>

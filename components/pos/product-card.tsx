@@ -1,7 +1,7 @@
 'use client';
 
 import { formatCurrency } from '@/lib/utils';
-import { useCartStore } from '@/store/cart-store'; // Import the store
+import { useCartStore } from '@/store/cart-store';
 import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import Image from 'next/image';
@@ -12,60 +12,76 @@ interface Product {
   price: number;
   image: string | null;
   category: string;
+  stock: number;
 }
 
 interface ProductCardProps {
   product: Product;
-  // REMOVED onAddToCart prop! We don't need it anymore.
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  // Hook into the global store
   const addToCart = useCartStore((state) => state.addToCart);
+  const isOutOfStock = product.stock <= 0;
 
   return (
-    <motion.div
-      whileHover={{ y: -5 }}
-      whileTap={{ scale: 0.95 }}
-      className="group relative bg-white dark:bg-slate-900 rounded-xl border shadow-sm overflow-hidden cursor-pointer transition-all hover:shadow-md h-[240px] flex flex-col"
-      onClick={() => addToCart(product)} // Call the store directly!
+    <motion.button
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={() => !isOutOfStock && addToCart(product)}
+      disabled={isOutOfStock}
+      className={`group text-left w-full h-full flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 ${
+        isOutOfStock ? 'opacity-50 grayscale cursor-not-allowed' : ''
+      }`}
     >
-      {/* Image Area */}
-      <div className="relative h-32 w-full bg-slate-100">
+      {/* Image Container - Aspect Ratio 4:3 */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-t-xl bg-slate-100 dark:bg-slate-800">
         {product.image ? (
           <Image
             src={product.image}
             alt={product.name}
             fill
-            className="object-cover transition-transform group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
           />
         ) : (
-          <div className="flex items-center justify-center h-full text-slate-400 text-xs">
+          <div className="flex h-full items-center justify-center text-slate-300">
             No Image
           </div>
         )}
 
-        <div className="absolute top-2 right-2 bg-white/90 p-1.5 rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity">
-          <Plus size={16} className="text-blue-600" />
-        </div>
+        {/* Floating Add Button (Visible on Hover) */}
+        {!isOutOfStock && (
+          <div className="absolute bottom-3 right-3 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white shadow-md">
+              <Plus size={16} strokeWidth={3} />
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Info Area */}
-      <div className="p-3 flex flex-col flex-1 justify-between">
-        <div>
-          <span className="text-[10px] font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
+      {/* Content */}
+      <div className="flex flex-1 flex-col p-3">
+        <div className="mb-1 flex items-start justify-between gap-2">
+          <span className="inline-block rounded-[4px] bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:bg-slate-800 dark:text-slate-400">
             {product.category}
           </span>
-          <h3 className="font-semibold text-sm text-slate-700 dark:text-slate-200 mt-1 line-clamp-2 leading-tight">
-            {product.name}
-          </h3>
+          {isOutOfStock && (
+            <span className="text-[10px] font-bold text-red-500">
+              Out of Stock
+            </span>
+          )}
         </div>
 
-        <div className="font-bold text-lg text-slate-900 dark:text-white">
-          {formatCurrency(product.price)}
+        <h3 className="line-clamp-2 text-sm font-semibold leading-tight text-slate-700 dark:text-slate-200">
+          {product.name}
+        </h3>
+
+        <div className="mt-auto pt-3">
+          <span className="block text-lg font-bold text-slate-900 dark:text-white">
+            {formatCurrency(product.price)}
+          </span>
         </div>
       </div>
-    </motion.div>
+    </motion.button>
   );
 }
