@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { History, MoreHorizontal, Pencil, Trash } from 'lucide-react'; // Import History icon
+import { History, MoreHorizontal, Pencil, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -44,11 +44,11 @@ interface Customer {
 export function CustomerActions({ customer }: { customer: Customer }) {
   const [openEdit, setOpenEdit] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
-  const [openHistory, setOpenHistory] = useState(false); // New State
+  const [openHistory, setOpenHistory] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // ... (Keep your existing onUpdate function here) ...
+  // ... (Keep existing onUpdate function) ...
   async function onUpdate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
@@ -80,7 +80,7 @@ export function CustomerActions({ customer }: { customer: Customer }) {
     }
   }
 
-  // ... (Keep your existing onDelete function here) ...
+  // ... (Keep existing onDelete function) ...
   async function onDelete() {
     setIsLoading(true);
     try {

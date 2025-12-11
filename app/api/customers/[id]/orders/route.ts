@@ -1,4 +1,3 @@
-// app/api/customers/[id]/orders/route.ts
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
@@ -6,7 +5,7 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> } // Updated for Next.js 15
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;

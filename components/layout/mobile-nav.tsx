@@ -53,7 +53,7 @@ export function MobileNav() {
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
 
         <div className="flex flex-col h-full">
-          {/* We pass a className to MainNav to ensure it fills the space
+          {/* I pass a className to MainNav to ensure it fills the space
             and respects the transparent background of the sheet
           */}
           <MainNav className="border-none bg-transparent" />

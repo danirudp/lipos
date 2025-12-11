@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils'; // Assuming you have this utility
+import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Command, Loader2, Search, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -14,7 +14,7 @@ export function SearchBar() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Local state for immediate UI feedback (Clear button visibility)
-  // We sync this with the URL param initially
+  // I sync this with the URL param initially
   const [value, setValue] = useState(
     searchParams.get('query')?.toString() || ''
   );

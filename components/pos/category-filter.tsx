@@ -16,7 +16,6 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useTransition } from 'react';
 
 // --- CONFIGURATION ---
-// In a real app, this might come from a CMS or API
 const CATEGORIES = [
   { id: 'All', label: 'All Items', icon: LayoutGrid },
   { id: 'Electronics', label: 'Electronics', icon: Smartphone },

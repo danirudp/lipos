@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 // PATCH: Update a specific customer
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ id: string }> } // Updated for Next.js 15
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -35,7 +35,7 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    // Check if they have orders first (Senior logic: Don't break data integrity)
+    // Check if they have orders first
     const existingOrders = await prisma.order.findFirst({
       where: { customerId: id },
     });

@@ -38,13 +38,10 @@ export default async function POSPage(props: PageProps) {
   return (
     <POSLayout customers={customers}>
       {/* UNIFIED HEADER
-        - flex-col: Stacks items vertically
-        - sticky top-0: Keeps it visible while scrolling
-      */}
+       */}
       <header className="sticky top-0 z-30 w-full border-b border-slate-200 bg-white/85 px-4 py-3 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/85 md:px-6 md:py-4">
         <div className=" flex w-full flex-col gap-3">
           {/* 1. CATEGORIES (TOP) */}
-          {/* w-full ensures it matches the width of the search bar */}
 
           {/* 2. SEARCH BAR (BOTTOM) */}
           <div className="w-full">
@@ -54,7 +51,6 @@ export default async function POSPage(props: PageProps) {
       </header>
 
       {/* PRODUCT GRID */}
-      {/* Added pt-4 to give breathing room from the new taller header */}
       <div className="flex-1 overflow-y-auto bg-slate-50/50 p-4 dark:bg-slate-950 md:p-6">
         {products.length === 0 ? (
           <div className="flex h-64 flex-col items-center justify-center text-slate-400">
