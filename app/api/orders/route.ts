@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { revalidatePath } from 'next/cache'; // <--- IMPORTED for cache fix
 import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
@@ -53,47 +54,61 @@ export async function POST(request: Request) {
     }
 
     // --- 2. THE TRANSACTION ---
-    const result = await prisma.$transaction(async (tx) => {
-      // Step A: Create the Main Order
-      const order = await tx.order.create({
-        data: {
-          totalAmount: parseFloat(totalAmount),
-          customerId: customerId || null,
-          status: 'COMPLETED',
-        },
-      });
-
-      console.log('Order created:', order.id);
-
-      // Step B: Bulk Create Order Items (OPTIMIZED FIX)
-      // This runs ONE query instead of looping N times
-      await tx.orderItem.createMany({
-        data: items.map((item: any) => ({
-          orderId: order.id,
-          productId: item.id,
-          quantity: parseInt(item.quantity),
-          price: parseFloat(item.price),
-        })),
-      });
-
-      // Step C: Update Stock (Decrement inventory)
-      // We still map these because each update is unique to a product ID
-      const stockUpdateActions = items.map((item: any) =>
-        tx.product.update({
-          where: { id: item.id },
+    const result = await prisma.$transaction(
+      async (tx) => {
+        // Step A: Create the Main Order
+        const order = await tx.order.create({
           data: {
-            stock: {
-              decrement: parseInt(item.quantity),
-            },
+            totalAmount: parseFloat(totalAmount),
+            customerId: customerId || null,
+            status: 'COMPLETED',
           },
-        })
-      );
+        });
 
-      // Execute all stock updates in parallel
-      await Promise.all(stockUpdateActions);
+        console.log('Order created:', order.id);
 
-      return order;
-    });
+        // Step B: Bulk Create Order Items (OPTIMIZED FIX)
+        // This runs ONE query instead of looping N times
+        await tx.orderItem.createMany({
+          data: items.map((item: any) => ({
+            orderId: order.id,
+            productId: item.id,
+            quantity: parseInt(item.quantity),
+            price: parseFloat(item.price),
+          })),
+        });
+
+        // Step C: Update Stock (Decrement inventory)
+        // We still map these because each update is unique to a product ID
+        const stockUpdateActions = items.map((item: any) =>
+          tx.product.update({
+            where: { id: item.id },
+            data: {
+              stock: {
+                decrement: parseInt(item.quantity),
+              },
+            },
+          })
+        );
+
+        // Execute all stock updates in parallel
+        await Promise.all(stockUpdateActions);
+
+        return order;
+      },
+      // --- FIX 1: INCREASE TIMEOUT ---
+      // This prevents "Transaction not found" errors on slower connections (e.g. Local dev -> Neon DB)
+      {
+        maxWait: 5000, // Default: 2000ms
+        timeout: 20000, // Default: 5000ms. Increased to 20s.
+      }
+    );
+
+    // --- FIX 2: REVALIDATE CACHE ---
+    // This tells Next.js to refresh these pages so the new order appears immediately.
+    revalidatePath('/history');
+    revalidatePath('/dashboard');
+    revalidatePath('/products');
 
     // --- 3. SUCCESS RESPONSE ---
     return NextResponse.json({
