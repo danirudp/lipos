@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { AddCustomerDialog } from '@/components/customers/add-customer-dialog';
 import { CustomerActions } from '@/components/customers/customer-actions';
 import { Badge } from '@/components/ui/badge';
