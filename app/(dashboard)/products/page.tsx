@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { ProductActions } from '@/components/products/product-actions';
 import { ProductDialog } from '@/components/products/product-dialog';
 import { Badge } from '@/components/ui/badge';
