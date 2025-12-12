@@ -57,6 +57,7 @@ const Button = ({
   children,
   className,
   variant = 'primary',
+  href,
   ...props
 }: any) => {
   const baseStyle =
@@ -71,6 +72,23 @@ const Button = ({
       'border-2 border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50',
     ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
   };
+
+  const combinedClassName = cn(baseStyle, variants[variant], className);
+
+  // --- 1. CONDITIONAL RENDER: Use Link (Modern Syntax) ---
+  if (href) {
+    return (
+      <Link href={href} className={combinedClassName} {...props}>
+        <motion.span // Use a motion.span or motion.div as the child
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="inline-flex items-center justify-center h-full w-full"
+        >
+          {children}
+        </motion.span>
+      </Link>
+    );
+  }
 
   return (
     <motion.button
@@ -214,6 +232,18 @@ export default function Page() {
     return () => unsubscribe();
   }, [scrollY]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      // Check if window is larger than the 'md' breakpoint (768px in Tailwind defaults)
+      if (window.innerWidth >= 768 && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [mobileMenuOpen]);
+
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-100 overflow-x-hidden">
       {/* Navigation */}
@@ -316,6 +346,7 @@ export default function Page() {
               <div className="h-px w-full bg-slate-100 my-4" />
               <div className="grid gap-4">
                 <Button
+                  href="/login"
                   variant="outline"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full justify-center"
@@ -323,6 +354,7 @@ export default function Page() {
                   Log In
                 </Button>
                 <Button
+                  href="/login"
                   variant="primary"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full justify-center"
