@@ -57,7 +57,7 @@ export function SearchBar() {
   return (
     <div
       className={cn(
-        'group relative flex w-full items-center rounded-2xl transition-all duration-300 ease-out',
+        'group relative flex w-full items-center rounded-xl transition-all duration-300 ease-out',
         isFocused
           ? 'bg-white shadow-[0_4px_20px_-2px_rgba(37,99,235,0.1)] ring-2 ring-blue-600 dark:bg-slate-900 dark:ring-blue-500'
           : 'bg-white border border-slate-200 shadow-sm hover:border-slate-300 dark:bg-slate-900 dark:border-slate-800'

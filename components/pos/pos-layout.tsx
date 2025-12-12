@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ShoppingBag, Zap } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 // Components
@@ -48,16 +48,6 @@ export function POSLayout({ children, customers }: POSLayoutProps) {
 
       {/* 1. MAIN CONTENT AREA */}
       <main className="relative z-10 flex-1 flex flex-col h-full min-w-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]">
-        {/* Header / Brand Area for Mobile/Tablet */}
-        <div className="md:hidden flex items-center justify-between p-4 border-b border-slate-200/60 bg-white/50 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/50">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/30">
-              <Zap size={18} fill="currentColor" />
-            </div>
-            <span className="font-bold text-lg tracking-tight">Acme POS</span>
-          </div>
-        </div>
-
         {/* Scrollable Grid */}
         <div className="h-full overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-800">
           <div className="p-4 pb-32 md:p-6 md:pb-6 max-w-[1600px] mx-auto">

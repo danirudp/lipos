@@ -44,7 +44,7 @@ export default async function POSPage(props: PageProps) {
           {/* 1. CATEGORIES (TOP) */}
 
           {/* 2. SEARCH BAR (BOTTOM) */}
-          <div className="w-full">
+          <div className="w-full rounded-xl">
             <SearchBar />
           </div>
         </div>
