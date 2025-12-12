@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 
 export const metadata: Metadata = {
-  title: 'Login | LIPOS',
+  title: 'Login',
 };
 
 export default function LoginPage() {
