@@ -35,12 +35,11 @@ export function POSLayout({ children, customers }: POSLayoutProps) {
     ? items.reduce((acc, item) => acc + item.quantity, 0)
     : 0;
 
-  // Custom "Acme" easing curve
   const fluidEase = [0.22, 1, 0.36, 1];
 
   return (
     <div className="relative flex h-[100dvh] w-full overflow-hidden bg-slate-50 text-slate-900 font-sans selection:bg-blue-100 dark:bg-slate-950 dark:text-slate-100">
-      {/* Background Ambience (Matches Dashboard) */}
+      {/* Background Ambience */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 h-[500px] w-[500px] rounded-full bg-blue-100/40 blur-[100px] dark:bg-blue-900/10" />
         <div className="absolute bottom-0 right-1/4 h-[500px] w-[500px] rounded-full bg-purple-100/40 blur-[100px] dark:bg-purple-900/10" />

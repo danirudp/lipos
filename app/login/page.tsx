@@ -52,7 +52,6 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Suspense is required because LoginForm uses useSearchParams */}
           <Suspense
             fallback={
               <div className="h-40 w-full animate-pulse rounded-lg bg-gray-100" />

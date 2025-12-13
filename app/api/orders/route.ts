@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     }
 
     // --- 1. PRE-TRANSACTION VALIDATION ---
-    // We check stock BEFORE starting the transaction to save resources.
+
     for (const item of items) {
       if (!item.id || !item.quantity || !item.price) {
         return NextResponse.json(
@@ -67,8 +67,8 @@ export async function POST(request: Request) {
 
         console.log('Order created:', order.id);
 
-        // Step B: Bulk Create Order Items (OPTIMIZED FIX)
-        // This runs ONE query instead of looping N times
+        // Step B: Bulk Create Order Items
+
         await tx.orderItem.createMany({
           data: items.map((item: any) => ({
             orderId: order.id,
@@ -79,7 +79,7 @@ export async function POST(request: Request) {
         });
 
         // Step C: Update Stock (Decrement inventory)
-        // We still map these because each update is unique to a product ID
+
         const stockUpdateActions = items.map((item: any) =>
           tx.product.update({
             where: { id: item.id },
@@ -97,15 +97,13 @@ export async function POST(request: Request) {
         return order;
       },
       // --- FIX 1: INCREASE TIMEOUT ---
-      // This prevents "Transaction not found" errors on slower connections (e.g. Local dev -> Neon DB)
       {
         maxWait: 5000, // Default: 2000ms
-        timeout: 20000, // Default: 5000ms. Increased to 20s.
+        timeout: 20000, // Default: 5000ms.
       }
     );
 
     // --- FIX 2: REVALIDATE CACHE ---
-    // This tells Next.js to refresh these pages so the new order appears immediately.
     revalidatePath('/history');
     revalidatePath('/dashboard');
     revalidatePath('/products');
@@ -120,7 +118,7 @@ export async function POST(request: Request) {
     console.error('=== CHECKOUT TRANSACTION FAILED ===');
     console.error('Error message:', error.message);
 
-    // Check if it's still a timeout (unlikely now, but good to handle)
+    // Check if it's still a timeout
     if (error.message.includes('Transaction already closed')) {
       return NextResponse.json(
         { error: 'System busy. Please try processing the order again.' },

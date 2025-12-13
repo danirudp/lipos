@@ -29,12 +29,9 @@ export function CustomerHistoryDialog({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Only fetch when the dialog is actually OPEN and we have a valid ID
     if (open && customerId) {
       setLoading(true);
 
-      // FIX: Add timestamp to URL to prevent browser caching
-      // FIX: Add 'no-store' cache option
       fetch(`/api/customers/${customerId}/orders?t=${new Date().getTime()}`, {
         cache: 'no-store',
         headers: {

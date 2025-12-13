@@ -40,7 +40,7 @@ export function AddCustomerDialog() {
       if (res.ok) {
         toast.success('Customer added successfully');
         setOpen(false);
-        router.refresh(); // Refresh data without full page reload
+        router.refresh();
       } else {
         toast.error('Failed to add customer');
       }

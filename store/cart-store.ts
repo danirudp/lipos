@@ -10,8 +10,8 @@ export interface CartItem {
 
 interface CartStore {
   items: CartItem[];
-  customerId: string | null; // <--- NEW STATE
-  setCustomer: (id: string | null) => void; // <--- NEW ACTION
+  customerId: string | null;
+  setCustomer: (id: string | null) => void;
   addToCart: (product: any) => void;
   removeFromCart: (productId: string) => void;
   clearCart: () => void;
@@ -22,7 +22,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
   items: [],
   customerId: null,
 
-  setCustomer: (id) => set({ customerId: id }), // <--- Simple setter
+  setCustomer: (id) => set({ customerId: id }),
 
   addToCart: (product) => {
     set((state) => {
@@ -46,7 +46,7 @@ export const useCartStore = create<CartStore>((set, get) => ({
     }));
   },
 
-  clearCart: () => set({ items: [], customerId: null }), // Reset customer too? optional
+  clearCart: () => set({ items: [], customerId: null }),
 
   getTotal: () => {
     const { items } = get();

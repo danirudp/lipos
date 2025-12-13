@@ -32,8 +32,8 @@ interface Product {
 }
 
 interface Props {
-  product?: Product; // If provided, we are in "Edit Mode"
-  trigger?: React.ReactNode; // Custom button
+  product?: Product;
+  trigger?: React.ReactNode;
 }
 
 export function ProductDialog({ product, trigger }: Props) {

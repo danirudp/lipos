@@ -31,7 +31,6 @@ import { History, MoreHorizontal, Pencil, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-// Import the new component
 import { CustomerHistoryDialog } from './customer-history-dialog';
 
 interface Customer {
@@ -48,7 +47,6 @@ export function CustomerActions({ customer }: { customer: Customer }) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // ... (Keep existing onUpdate function) ...
   async function onUpdate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
@@ -80,7 +78,6 @@ export function CustomerActions({ customer }: { customer: Customer }) {
     }
   }
 
-  // ... (Keep existing onDelete function) ...
   async function onDelete() {
     setIsLoading(true);
     try {

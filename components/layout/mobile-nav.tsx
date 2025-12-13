@@ -17,9 +17,6 @@ export function MobileNav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  // UX FIX: Automatically close the sheet when the route changes.
-  // This prevents the common issue where the user clicks a link
-  // but the menu stays open, blocking the new page content.
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
@@ -47,18 +44,13 @@ export function MobileNav() {
       <SheetContent
         side="left"
         className="p-0 w-[85vw] max-w-xs border-r-0 bg-white/95 backdrop-blur-xl dark:bg-slate-950/95"
-        // Add a high z-index to ensure it sits above everything
         style={{ zIndex: 100 }}
       >
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
 
         <div className="flex flex-col h-full">
-          {/* I pass a className to MainNav to ensure it fills the space
-            and respects the transparent background of the sheet
-          */}
           <MainNav className="border-none bg-transparent" />
 
-          {/* Optional: Add a decorative footer or version number if not in MainNav */}
           <div className="p-6 text-center text-[10px] text-slate-300 dark:text-slate-700">
             &copy; 2025 LIPOS System
           </div>

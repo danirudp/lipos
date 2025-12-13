@@ -9,7 +9,6 @@ export const authConfig = {
       const isLoggedIn = !!auth?.user;
 
       // 1. Define pages that are strictly for logged-in users
-      // You can add more paths here as your app grows
       const protectedPaths = [
         '/pos',
         '/dashboard',

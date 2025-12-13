@@ -11,10 +11,10 @@ export async function POST(req: Request) {
     const product = await prisma.product.create({
       data: {
         name,
-        price: parseFloat(price), // Ensure it's a number for Decimal
+        price: parseFloat(price),
         stock: parseInt(stock),
         category,
-        image: image || null, // Optional
+        image: image || null,
       },
     });
 

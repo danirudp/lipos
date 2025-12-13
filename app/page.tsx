@@ -75,11 +75,11 @@ const Button = ({
 
   const combinedClassName = cn(baseStyle, variants[variant], className);
 
-  // --- 1. CONDITIONAL RENDER: Use Link (Modern Syntax) ---
+  // --- 1. CONDITIONAL RENDER: Use Link ---
   if (href) {
     return (
       <Link href={href} className={combinedClassName} {...props}>
-        <motion.span // Use a motion.span or motion.div as the child
+        <motion.span
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="inline-flex items-center justify-center h-full w-full"
@@ -102,7 +102,6 @@ const Button = ({
 };
 
 // --- Custom POS Interface Mockup (CSS Art) ---
-// This draws a mini version of the LIPOS app using only divs and Tailwind
 const POSMockup = () => (
   <div className="relative mx-auto w-full max-w-[1000px] rounded-[2rem] bg-slate-900/5 p-3 ring-1 ring-inset ring-slate-900/10 lg:rounded-[2.5rem] lg:p-4 backdrop-blur-sm">
     <div className="relative rounded-[1.5rem] bg-slate-50 shadow-2xl overflow-hidden border border-slate-200 flex h-[400px] sm:h-[500px]">
@@ -234,7 +233,6 @@ export default function Page() {
 
   useEffect(() => {
     const handleResize = () => {
-      // Check if window is larger than the 'md' breakpoint (768px in Tailwind defaults)
       if (window.innerWidth >= 768 && mobileMenuOpen) {
         setMobileMenuOpen(false);
       }

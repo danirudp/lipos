@@ -1,5 +1,6 @@
 'use client';
 
+import { signOutAction } from '@/lib/actions';
 import { cn } from '@/lib/utils';
 import { LayoutGroup, motion } from 'framer-motion';
 import {
@@ -14,12 +15,9 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-// 1. IMPORT THE SIGN OUT ACTION
-import { signOutAction } from '@/lib/actions';
 
 // --- CONFIGURATION ---
 const NAV_ITEMS = [
-  // ... (Your existing NAV_ITEMS remains the same)
   {
     group: 'Operations',
     items: [
@@ -53,7 +51,7 @@ export function MainNav({ className, ...props }: MainNavProps) {
       )}
       {...props}
     >
-      {/* 1. BRAND HEADER (Your existing code) */}
+      {/* 1. BRAND HEADER */}
       <div className="h-20 flex items-center px-6 border-b border-transparent">
         <div className="group flex items-center gap-3.5 cursor-pointer">
           <div className="relative w-10 h-10 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30 transition-transform group-hover:scale-105 group-active:scale-95">
@@ -71,7 +69,7 @@ export function MainNav({ className, ...props }: MainNavProps) {
         </div>
       </div>
 
-      {/* 2. SCROLLABLE NAVIGATION AREA (Your existing code) */}
+      {/* 2. SCROLLABLE NAVIGATION AREA */}
       <div className="flex-1 overflow-y-auto px-3 py-6 space-y-8 scrollbar-hide">
         <LayoutGroup id="sidebar">
           {NAV_ITEMS.map((group) => (
@@ -145,7 +143,7 @@ export function MainNav({ className, ...props }: MainNavProps) {
         </LayoutGroup>
       </div>
 
-      {/* 3. USER FOOTER - Updated with Sign Out Form */}
+      {/* 3. USER FOOTER */}
       <div className="p-3 mt-auto">
         <div className="relative overflow-hidden rounded-2xl bg-white border border-slate-200/60 p-1 shadow-sm transition-all hover:shadow-md hover:border-slate-300 dark:bg-slate-900 dark:border-slate-800">
           {/* User Row (Your existing code) */}

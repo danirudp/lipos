@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    // 1. Clean up existing data (optional, to avoid duplicates)
+    // 1. Clean up existing data
     await prisma.product.deleteMany();
     await prisma.customer.deleteMany();
 

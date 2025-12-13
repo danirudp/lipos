@@ -351,7 +351,6 @@ export function CartSidebar({ customers, isMobile = false }: CartSidebarProps) {
   }, [items, getTotal]);
 
   return (
-    // FIX 1: Ensure parent has explicit overflow control
     <div className="relative flex h-full flex-col overflow-hidden bg-slate-50/50 backdrop-blur-3xl dark:bg-slate-950">
       {/* 1. GLASS HEADER */}
       <div className="relative z-30 flex-none flex flex-col gap-4 border-b border-slate-200/60 bg-white/80 p-5 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-950/80">
