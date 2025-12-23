@@ -40,8 +40,7 @@
 1.  **Clone the repository:**
 
     ```bash
-    git clone [https://github.com/yourusername/lipos.git](https://github.com/yourusername/lipos.git)
-    cd lipos
+    git clone https://github.com/danirudp/lipos.git
     ```
 
 2.  **Install dependencies:**
